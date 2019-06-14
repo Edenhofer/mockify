@@ -1,0 +1,19 @@
+{
+	"manifest_version": 2,
+	"name": "Mockify",
+	"version": "0.0.1",
+	"description": "Mock and or block identifying information about your browser",
+	"icons": {
+		"96": "icons/GooglePrivacyBadge_96.png"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"js": [
+				"mock.js"
+			]
+		}
+	]
+}
