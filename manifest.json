@@ -6,6 +6,9 @@
 	"icons": {
 		"96": "icons/GooglePrivacyBadge_96.png"
 	},
+	"permissions": [
+		"storage", "webRequest", "webRequestBlocking", "<all_urls>"
+	],
 	"content_scripts": [
 		{
 			"matches": [
@@ -15,5 +18,8 @@
 				"content_script.js"
 			]
 		}
-	]
+	],
+	"background": {
+		"scripts": ["background.js"]
+	}
 }
