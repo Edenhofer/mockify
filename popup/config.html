@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Mockify</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script src="config.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<style>
+		body {
+			margin: auto;
+			width: 24em;
+			color: #474747;
+		}
+	</style>
+</head>
+
+<body>
+	<br>
+
+	<form>
+		<table>
+			<tr>
+				<td style="padding-bottom: 2em;font-size: 105%"><b>Power Toggle</b>
+					<span class="tab"></span>
+				</td>
+				<td style="padding-bottom: 2em;">
+					<label class="switch">
+						<input type="checkbox" id="toggle_power">
+						<span class="slider round"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Mock HTTP USER_AGENT
+					<span class="tab"></span>
+				</td>
+				<td>
+					<label class="switch">
+						<input type="checkbox" id="toggle_user_agent">
+						<span class="slider round"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Block Tracking Websites
+					<span class="tab"></span>
+				</td>
+				<td>
+					<label class="switch">
+						<input type="checkbox" id="toggle_user_agent">
+						<span class="slider round"></span>
+					</label>
+				</td>
+			</tr>
+		</table>
+	</form>
+
+	<br>
+	<br>
+
+	<span class="report">
+		If you encounter any bugs or errors, please report them on
+		<a href="https://github.com/Edenhofer/mockify/issues" target="_blank">github</a>. Thank you in advance.
+	</span>
+
+	<span class="version" id="version"></span>
+
+	<div class="footer">
+		<p>
+			<i>&copy; Gordian Edenhofer, Shanki Ish Berger</i>
+		</p>
+	</div>
+</body>
+
+</html>
