@@ -25,13 +25,13 @@ function log(message) {
 
 function initConfigurationPage() {
 	// Load local configuration
-	browser.storage.local.get("config").then(function (config) {
-		if (config.debug_mode) log("Loaded the following configuration: " +
-			JSON.stringify(config));
+	browser.storage.local.get("config").then(function (response) {
+		if (response.debug_mode) log("Loaded the following configuration: " +
+			JSON.stringify(response));
 
 		// Adapt the page to the currently configured values
 		for (let setting of binary_settings) {
-			if (config[setting]) {
+			if (response.config[setting]) {
 				document.getElementById("toggle_" + setting).checked = true;
 			}
 		}
