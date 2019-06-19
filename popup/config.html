@@ -21,7 +21,7 @@
 	<br>
 
 	<form>
-		<table>
+		<table style="width: 24em;">
 			<tr>
 				<td style="padding-bottom: 2em;font-size: 105%"><b>Power Toggle</b>
 					<span class="tab"></span>
@@ -40,7 +40,7 @@
 				</td>
 				<td>
 					<label class="switch">
-						<input type="checkbox" id="toggle_user_agent">
+						<input type="checkbox" id="toggle_mock_user_agent">
 						<span class="slider round"></span>
 					</label>
 				</td>
@@ -52,13 +52,27 @@
 				</td>
 				<td>
 					<label class="switch">
-						<input type="checkbox" id="toggle_user_agent">
+						<input type="checkbox" id="toggle_block_tracking_urls">
+						<span class="slider round"></span>
+					</label>
+				</td>
+			</tr>
+
+			<tr>
+				<td style="padding-top: 2em;font-size: 105%">Debug Mode
+					<span class="tab"></span>
+				</td>
+				<td style="padding-top: 2em;">
+					<label class="switch">
+						<input type="checkbox" id="toggle_debug_mode">
 						<span class="slider round"></span>
 					</label>
 				</td>
 			</tr>
 		</table>
 	</form>
+
+	<span class="warning" id="warning"></span>
 
 	<br>
 	<br>
