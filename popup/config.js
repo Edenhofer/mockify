@@ -12,7 +12,7 @@ window.onload = function () {
 	// Add event listeners for every possible value that could be changed
 	for (let setting of binary_settings) {
 		document.getElementById("toggle_" + setting).addEventListener("click",
-			writeConfiguration);
+			updateConfiguration);
 	}
 }
 
@@ -43,8 +43,9 @@ function initConfigurationPage() {
 	);
 }
 
-function writeConfiguration() {
+function updateConfiguration() {
 	let config = {}
+	config.alt_header = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
 
 	// Get all setting values
 	for (let setting of binary_settings) {
@@ -57,4 +58,12 @@ function writeConfiguration() {
 	browser.storage.local.set({ config: config });
 	if (config.debug_mode) log("Stored the following configuration: " +
 		JSON.stringify(config));
+
+	// Send a message to the background process to apply the settings
+	let message = browser.runtime.sendMessage({ action: "reload"});
+	message.then(function (m) {
+		log("Message from the background script: " + JSON.stringify(m));
+	},
+		function (e) { console.error(e); }
+	);
 }

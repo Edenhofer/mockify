@@ -4,8 +4,6 @@
 let TAG = "mockify"
 // TODO: Write a proper configuration handler
 let config = {}
-config.debug_mode = true
-config.alt_header = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
 
 
 /*
@@ -52,7 +50,7 @@ function rewriteResponseHeader(e) {
 * Add rewriteRequestHeader to onBeforeSendHeaders and rewriteResponseHeader to
 * onHeadersReceived.
 */
-function addListeners() {
+function addHeaderListeners() {
 	let target_urls = ["<all_urls>"]
 
 	/* Use blocking listeners to also modify the header */
@@ -69,12 +67,60 @@ function addListeners() {
 /*
 * Remove rewriteRequestHeader and rewriteResponseHeader
 */
-function removeListeners() {
+function removeHeaderListeners() {
 	browser.webRequest.onBeforeSendHeaders.removeListener(
 		rewriteRequestHeader);
 	browser.webRequest.onHeadersReceived.removeListener(
 		rewriteResponseHeader);
 }
 
+function updateListeners() {
+	if (!config.power) {
+		removeHeaderListeners();
 
-addListeners()
+		return;
+	}
+
+	if (config.mock_user_agent) { addHeaderListeners(); }
+	else { removeHeaderListeners(); }
+
+	if (config.block_tracking_urls) null;  // TODO
+}
+
+function handleMessage(message, sender, sendResponse) {
+	if (message.action === "reload") {
+		// Load local configuration
+		browser.storage.local.get("config").then(function (response) {
+			if (config.debug_mode) log("Loaded the following configuration: " +
+				JSON.stringify(response));
+			// Make the configuration globally available
+			config = response.config;
+
+			updateListeners();
+		},
+			function onError() {
+				if (browser.runtime.lastError) console.error(
+					"Runtime Error :( " + browser.runtime.lastError);
+			}
+		);
+	}
+}
+
+addHeaderListeners();
+// Load local configuration and update listeners
+browser.storage.local.get("config").then(function (response) {
+	if (config.debug_mode) log("Loaded the following configuration: " +
+		JSON.stringify(response));
+
+	// Make the configuration globally available
+	config = response.config;
+
+	updateListeners();
+},
+	function onError() {
+		if (browser.runtime.lastError) console.error("Runtime Error :( " +
+			browser.runtime.lastError);
+	}
+);
+// Add a listener for communicating with the settings page
+browser.runtime.onMessage.addListener(handleMessage);
