@@ -7,14 +7,6 @@ let binary_settings = [
 	"mock_user_agent",
 	"block_tracking_urls"
 ];
-let fallback_config = {
-	power: true,
-	debug_mode: true,
-	mock_user_agent: true,
-	block_tracking_urls: false,
-	alt_header:
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
-};
 
 window.onload = function() {
 	initConfigurationPage();
@@ -38,12 +30,14 @@ function initConfigurationPage() {
 	// Load local configuration
 	browser.storage.local.get("config").then(
 		function(response) {
-			let config = {};
+			// The value `config` will be set by the background script
+			// if it is not set, print an error
 			if (Object.entries(response).length === 0) {
-				config = fallback_config;
-			} else {
-				config = response.config;
+				console.error(
+					"Configuration was not initialized by the background process"
+				);
 			}
+			let config = response.config;
 
 			if (config.debug_mode) {
 				log(

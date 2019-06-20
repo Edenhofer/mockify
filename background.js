@@ -1,7 +1,6 @@
 "use strict";
 
 let TAG = "mockify";
-// TODO: Write a proper configuration handler
 let config = {};
 let fallback_config = {
 	power: true,
@@ -129,29 +128,45 @@ function handleMessage(message, sender, sendResponse) {
 	}
 }
 
-addHeaderListeners();
-// Load local configuration and update listeners
-browser.storage.local.get("config").then(
-	function(response) {
-		// Make the (fallback) configuration globally available
-		if (Object.entries(response).length === 0) {
-			config = fallback_config;
-		} else {
-			config = response.config;
-		}
+function init() {
+	// Load local configuration and update listeners
+	browser.storage.local.get("config").then(
+		function(response) {
+			// Check whether we are run for the first time
+			if (Object.entries(response).length === 0) {
+				// Use the fallback configuration values as config and save them
+				config = fallback_config;
+				browser.storage.local.set({ config: config }).then(
+					function() {
+						if (config.debug_mode)
+							log("Successfully initialized config");
+					},
+					function onError(e) {
+						console.error("Failure in initializing config" + e);
+					}
+				);
+			} else {
+				// Make the configuration globally available
+				config = response.config;
+			}
 
-		if (config.debug_mode) {
-			log(
-				"Loaded the following configuration: " + JSON.stringify(config)
-			);
-		}
+			if (config.debug_mode) {
+				log(
+					"Loaded the following configuration: " +
+						JSON.stringify(config)
+				);
+			}
 
-		updateListeners();
-	},
-	function onError() {
-		if (browser.runtime.lastError)
-			console.error("Runtime Error :( " + browser.runtime.lastError);
-	}
-);
-// Add a listener for communicating with the settings page
-browser.runtime.onMessage.addListener(handleMessage);
+			updateListeners();
+		},
+		function onError() {
+			if (browser.runtime.lastError)
+				console.error("Runtime Error :( " + browser.runtime.lastError);
+		}
+	);
+
+	// Add a listener for communicating with the settings page
+	browser.runtime.onMessage.addListener(handleMessage);
+}
+
+init();
