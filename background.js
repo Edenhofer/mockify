@@ -4,6 +4,13 @@
 let TAG = "mockify"
 // TODO: Write a proper configuration handler
 let config = {}
+let fallback_config = {
+	"power": true,
+	"debug_mode": true,
+	"mock_user_agent": true,
+	"block_tracking_urls": false,
+	"alt_header": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+}
 
 
 /*
@@ -91,10 +98,12 @@ function handleMessage(message, sender, sendResponse) {
 	if (message.action === "reload") {
 		// Load local configuration
 		browser.storage.local.get("config").then(function (response) {
+			// We already know that the config object exist so just make it
+			// globally available
+			config = response.config;
+
 			if (config.debug_mode) log("Loaded the following configuration: " +
 				JSON.stringify(response));
-			// Make the configuration globally available
-			config = response.config;
 
 			updateListeners();
 		},
@@ -109,11 +118,17 @@ function handleMessage(message, sender, sendResponse) {
 addHeaderListeners();
 // Load local configuration and update listeners
 browser.storage.local.get("config").then(function (response) {
-	if (config.debug_mode) log("Loaded the following configuration: " +
-		JSON.stringify(response));
+	// Make the (fallback) configuration globally available
+	if (Object.entries(response).length === 0) {
+		config = fallback_config;
+	} else {
+		config = response.config
+	}
 
-	// Make the configuration globally available
-	config = response.config;
+	if (config.debug_mode) {
+		log("Loaded the following configuration: " +
+			JSON.stringify(config));
+	}
 
 	updateListeners();
 },
