@@ -208,79 +208,18 @@ function updateListeners() {
 	}
 }
 
-function handleMessage(message, sender, sendResponse) {
-	if (message.action === "reload") {
-		// Load local configuration
-		browser.storage.local.get("config").then(
-			function(response) {
-				// We already know that the config object exist so just make it
-				// globally available
-				config = response.config;
-
-				if (config.debug_mode)
-					log(
-						"Loaded the following configuration: " +
-							JSON.stringify(config)
-					);
-
-				updateListeners();
-			},
-			function onError() {
-				if (browser.runtime.lastError)
-					console.error(
-						"Runtime Error :( " + browser.runtime.lastError
-					);
-			}
-		);
-	}
-}
-
-function init() {
-	// Load local configuration and update listeners
+/*
+ * Load local configuration and update the global one in `config`.
+ * Furthermore, update listeners.
+ */
+function reload() {
 	browser.storage.local.get("config").then(
 		function(response) {
-			// Check whether we are run for the first time
-			if (Object.entries(response).length === 0) {
-				// Use the fallback configuration values as config and save them
-				config = fallback_config;
-				browser.storage.local.set({ config: config }).then(
-					function() {
-						if (config.debug_mode)
-							log("Successfully initialized config");
-					},
-					function onError(e) {
-						console.error("Failure in initializing config" + e);
-					}
-				);
-			} else {
-				// Make the configuration globally available
-				config = response.config;
-
-				// Check that `config` provides all the keys of `fallback_config`
-				// else amend the configuration in `config` and save it again
-				if (
-					Object.keys(config)
-						.sort()
-						.toString() !==
-					Object.keys(fallback_config)
-						.sort()
-						.toString()
-				) {
-					for (let setting of Object.keys(fallback_config)) {
-						if (typeof config[setting] === undefined) {
-							config[setting] = fallback_config[setting];
-						}
-					}
-
-					browser.storage.local.set({ config: config }).then(
-						function() {
-							if (config.debug_mode)
-								log("Successfully updated config");
-						},
-						function onError(e) {
-							console.error("Failure in updating config" + e);
-						}
-					);
+			// Use the configured setting and else fallback; set `config` globally
+			config = fallback_config;
+			if (typeof response["config"] !== undefined) {
+				for (let key of Object.keys(response.config)) {
+					config[key] = response.config[key];
 				}
 			}
 
@@ -291,7 +230,6 @@ function init() {
 				);
 			}
 
-			// Enable the desired functionality via an update of the listeners
 			updateListeners();
 		},
 		function onError() {
@@ -299,9 +237,54 @@ function init() {
 				console.error("Runtime Error :( " + browser.runtime.lastError);
 		}
 	);
+}
 
+function handleMessage(message, sender) {
+	if (message.action === "reload") {
+		reload();
+	} else if (message.action === "getConfig") {
+		// Load local configuration and send it back
+		let promiseConfig = new Promise(function(resolve, reject) {
+			browser.storage.local.get("config").then(
+				function(response) {
+					// Use the configured setting and else fallback; set `config` globally
+					config = fallback_config;
+					if (typeof response["config"] !== "undefined") {
+						for (let key of Object.keys(response.config)) {
+							config[key] = response.config[key];
+						}
+					}
+
+					if (config.debug_mode) {
+						log(
+							"Sending the following configuration back: " +
+								JSON.stringify(config)
+						);
+					}
+
+					resolve(config);
+				},
+				function onError() {
+					if (browser.runtime.lastError) {
+						console.error(
+							"Runtime Error :( " + browser.runtime.lastError
+						);
+					}
+
+					resolve(fallback_config);
+				}
+			);
+		});
+
+		return promiseConfig;
+	}
+}
+
+function init() {
 	// Add a listener for communicating with the settings page
 	browser.runtime.onMessage.addListener(handleMessage);
+
+	reload();
 }
 
 init();

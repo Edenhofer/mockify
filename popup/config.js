@@ -15,7 +15,14 @@ window.onload = function() {
 	for (let setting of binary_settings) {
 		document
 			.getElementById("toggle_" + setting)
-			.addEventListener("click", updateConfiguration);
+			.addEventListener("click", function() {
+				let new_config = {};
+				new_config[setting] = document.getElementById(
+					"toggle_" + setting
+				).checked;
+
+				updateConfig(new_config);
+			});
 	}
 };
 
@@ -27,21 +34,12 @@ function log(message) {
 }
 
 function initConfigurationPage() {
-	// Load local configuration
-	browser.storage.local.get("config").then(
-		function(response) {
-			// The value `config` will be set by the background script
-			// if it is not set, print an error
-			if (Object.entries(response).length === 0) {
-				console.error(
-					"Configuration was not initialized by the background process"
-				);
-			}
-			let config = response.config;
-
+	// Send a message to the background process to get the current settings
+	browser.runtime.sendMessage({ action: "getConfig" }).then(
+		function(config) {
 			if (config.debug_mode) {
 				log(
-					"Loaded the following configuration: " +
+					"Configuration provided by the background process: " +
 						JSON.stringify(config)
 				);
 			}
@@ -53,58 +51,33 @@ function initConfigurationPage() {
 				}
 			}
 		},
-		function onError() {
-			if (browser.runtime.lastError)
-				console.error("Runtime Error :( " + browser.runtime.lastError);
+		function(e) {
+			console.error(e);
 		}
 	);
 }
 
-function updateConfiguration() {
+function updateConfig(new_config) {
 	// Merge the current and new config and save it
 	browser.storage.local.get("config").then(
 		function(response) {
-			// The value `config` will be set by the background script
-			// if it is not set, print an error
-			if (Object.entries(response).length === 0) {
-				console.error(
-					"Configuration was not initialized by the background process"
-				);
+			let synced_config = {};
+			if (typeof response["config"] !== "undefined") {
+				synced_config = response["config"];
 			}
-			let config = response.config;
 
 			// Get all new setting values and merge them into the current config
-			for (let setting of binary_settings) {
-				config[setting] = document.getElementById(
-					"toggle_" + setting
-				).checked;
+			for (let setting of Object.keys(new_config)) {
+				synced_config[setting] = new_config[setting];
 			}
 
 			// Actually save the configuration in `config`
 			// Note that certain types, such as Function, Date, RegExp, Set, Map,
 			// ArrayBuffer and so on may not be saved via this method
-			browser.storage.local.set({ config: config }).then(
-				function() {
-					if (config.debug_mode) log("Successfully updated config");
-				},
-				function onError(e) {
-					console.error("Failure in updating config" + e);
-				}
-			);
+			browser.storage.local.set({ config: synced_config });
 
 			// Send a message to the background process to apply the settings
-			browser.runtime.sendMessage({ action: "reload" }).then(
-				function(m) {
-					if (config.debug_mode)
-						log(
-							"Message from the background script: " +
-								JSON.stringify(m)
-						);
-				},
-				function(e) {
-					console.error(e);
-				}
-			);
+			browser.runtime.sendMessage({ action: "reload" });
 		},
 		function onError() {
 			if (browser.runtime.lastError)
