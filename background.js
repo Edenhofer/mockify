@@ -148,6 +148,33 @@ function init() {
 			} else {
 				// Make the configuration globally available
 				config = response.config;
+
+				// Check that `config` provides all the keys of `fallback_config`
+				// else amend the configuration in `config` and save it again
+				if (
+					Object.keys(config)
+						.sort()
+						.toString() !==
+					Object.keys(fallback_config)
+						.sort()
+						.toString()
+				) {
+					for (let setting of Object.keys(fallback_config)) {
+						if (typeof config[setting] === undefined) {
+							config[setting] = fallback_config[setting];
+						}
+					}
+
+					browser.storage.local.set({ config: config }).then(
+						function() {
+							if (config.debug_mode)
+								log("Successfully updated config");
+						},
+						function onError(e) {
+							console.error("Failure in updating config" + e);
+						}
+					);
+				}
 			}
 
 			if (config.debug_mode) {
