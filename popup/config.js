@@ -26,8 +26,8 @@ function log(message) {
 function initConfigurationPage() {
 	// Load local configuration
 	browser.storage.local.get("config").then(function (response) {
-		if (response.debug_mode) log("Loaded the following configuration: " +
-			JSON.stringify(response));
+		if (response.config.debug_mode) log("Loaded the following configuration: " +
+			JSON.stringify(response.config));
 
 		// Adapt the page to the currently configured values
 		for (let setting of binary_settings) {
