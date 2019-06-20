@@ -113,7 +113,7 @@ function handleMessage(message, sender, sendResponse) {
 				if (config.debug_mode)
 					log(
 						"Loaded the following configuration: " +
-							JSON.stringify(response)
+							JSON.stringify(config)
 					);
 
 				updateListeners();
