@@ -6,10 +6,43 @@ let fallback_config = {
 	power: true,
 	debug_mode: true,
 	mock_user_agent: true,
-	block_tracking_urls: false,
+	block_tracking_urls: true,
+	block_urls: [
+		// Taken from https://github.com/slingamn/simpleblock/commit/87fe5cdcd4307d006689ad2d824193f0ba55c731
+		"*://*.doubleclick.net/*",
+		"*://partner.googleadservices.com/*",
+		"*://*.googlesyndication.com/*",
+		"*://*.google-analytics.com/*",
+		"*://creative.ak.fbcdn.net/*",
+		"*://*.adbrite.com/*",
+		"*://*.exponential.com/*",
+		"*://*.quantserve.com/*",
+		"*://*.scorecardresearch.com/*",
+		"*://*.zedo.com/*"
+	],
 	alt_header:
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
 };
+
+let type_callback_map = [
+	[["image"], blockImage],
+	[["sub_frame"], blockPage],
+	[
+		[
+			"main_frame",
+			"object",
+			"script",
+			"xmlhttprequest",
+			"stylesheet",
+			"font",
+			"media",
+			"ping",
+			"csp_report",
+			"other"
+		],
+		blockObject
+	]
+];
 
 /*
  * Simpler function to log messages
@@ -85,9 +118,79 @@ function removeHeaderListeners() {
 	browser.webRequest.onHeadersReceived.removeListener(rewriteResponseHeader);
 }
 
+function blockImage(e) {
+	if (config.debug_mode) log("Blocking " + e.url);
+
+	// Magic objects that the webRequest API can interprets, taken from
+	// https://github.com/slingamn/simpleblock/commit/b3e22e7be75c87b8d5e16f343f97bc546f6b252f
+	return {
+		redirectUrl:
+			"data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEAAAAALAAAAAABAAEAAAI="
+	};
+}
+
+function blockPage(e) {
+	if (config.debug_mode) log("Blocking " + e.url);
+
+	return { redirectUrl: "about:blank" };
+}
+
+function blockObject(e) {
+	if (config.debug_mode) log("Blocking " + e.url);
+
+	return { cancel: true };
+}
+
+function addURLListeners() {
+	// Note, enabling callbacks with no URLs will block *all* URLs
+	if (config.block_urls.length == 0) {
+		return;
+	}
+
+	for (let idx in type_callback_map) {
+		// Redirect images and iframes to the void, and cancel everything else
+		browser.webRequest.onBeforeRequest.addListener(
+			type_callback_map[idx][1],
+			{ urls: config.block_urls, types: type_callback_map[idx][0] },
+			// Use blocking listeners to actually cancel/redirect requests
+			["blocking"]
+		);
+	}
+
+	// The "*" schema does not match "ws://" and "wss://" in Chrome, see
+	// https://developer.chrome.com/extensions/match_patterns.
+	// However, we still want to block requests coming via those protocols.
+	let ws_filters = [];
+	let prefix = "*://";
+	config.block_urls.forEach(function(filter) {
+		if (filter.startsWith(prefix)) {
+			let no_prefix_url = filter.slice(prefix.length);
+			ws_filters.push("ws://" + no_prefix_url);
+			ws_filters.push("wss://" + no_prefix_url);
+		}
+	});
+	if (ws_filters.length > 0) {
+		browser.webRequest.onBeforeRequest.addListener(
+			blockObject,
+			{ urls: ws_filters, types: ["websocket"] },
+			// Use blocking listeners to actually cancel/redirect requests
+			["blocking"]
+		);
+	}
+}
+
+function removeURLListeners() {
+	for (let idx in type_callback_map) {
+		browser.webRequest.onBeforeRequest.removeListener(
+			type_callback_map[idx][1]
+		);
+	}
+}
+
 function updateListeners() {
 	if (!config.power) {
 		removeHeaderListeners();
+		removeURLListeners();
 
 		return;
 	}
@@ -98,7 +201,11 @@ function updateListeners() {
 		removeHeaderListeners();
 	}
 
-	if (config.block_tracking_urls) null; // TODO
+	if (config.block_tracking_urls) {
+		addURLListeners();
+	} else {
+		removeURLListeners();
+	}
 }
 
 function handleMessage(message, sender, sendResponse) {
@@ -184,6 +291,7 @@ function init() {
 				);
 			}
 
+			// Enable the desired functionality via an update of the listeners
 			updateListeners();
 		},
 		function onError() {
