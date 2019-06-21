@@ -217,7 +217,7 @@ function reload() {
 		function(response) {
 			// Use the configured setting and else fallback; set `config` globally
 			config = fallback_config;
-			if (typeof response["config"] !== undefined) {
+			if (typeof response["config"] !== "undefined") {
 				for (let key of Object.keys(response.config)) {
 					config[key] = response.config[key];
 				}
