@@ -5,6 +5,7 @@ let binary_settings = [
 	"power",
 	"debug_mode",
 	"mock_user_agent",
+	"mock_navigator",
 	"block_tracking_urls"
 ];
 
@@ -39,7 +40,7 @@ function initConfigurationPage() {
 		function(config) {
 			if (config.debug_mode) {
 				log(
-					"Configuration provided by the background process: " +
+					"Configuration provided by the background process to the config script: " +
 						JSON.stringify(config)
 				);
 			}

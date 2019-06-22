@@ -6,6 +6,7 @@ let fallback_config = {
 	power: true,
 	debug_mode: true,
 	mock_user_agent: true,
+	mock_navigator: true,
 	block_tracking_urls: true,
 	block_urls: [
 		// Taken from https://github.com/slingamn/simpleblock/commit/87fe5cdcd4307d006689ad2d824193f0ba55c731
@@ -21,7 +22,12 @@ let fallback_config = {
 		"*://*.zedo.com/*"
 	],
 	alt_header:
-		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
+		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+	alt_navigator: [
+		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
+		{ obj: "window.navigator", prop: "platform", value: "Win32" },
+		{ obj: "window.navigator", prop: "vendor", value: "" }
+	]
 };
 
 let type_callback_map = [
