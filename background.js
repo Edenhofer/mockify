@@ -148,7 +148,7 @@ function addURLListeners() {
 	}
 
 	for (let idx in type_callback_map) {
-		// Redirect images and iframes to the void, and cancel everything else
+		// Redirect images and iFrames to the void, and cancel everything else
 		browser.webRequest.onBeforeRequest.addListener(
 			type_callback_map[idx][1],
 			{ urls: config.block_urls, types: type_callback_map[idx][0] },
