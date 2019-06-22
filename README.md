@@ -27,4 +27,6 @@ Another great source for some details on more advanced tracking techniques curre
 
 ## Code outline
 
-* [mock.js](mock.js): JS code to be inserted into every website which is visited by the user
+* [background.js](background.js): JS code to be run in the background; It handles all the configuration management and communicates with other parts of the extension via messenges.
+* [content_script.js](content_script.js): JS code to be inserted into every website which is visited by the user; The code contains some gymnastic exercises to actually insert the desired JS scripts into the DOM of the loaded page itself. Thereby, it has to bypass the Content Security Policies (CSP) set by the website.
+* [popup/](popup/): Folder containing HTML and JS files for configuring and interacting with the extension.
