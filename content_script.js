@@ -84,6 +84,11 @@ function overrideWindowProperties(properties) {
 overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
 `;
 
+		// Do not change any Javascript code if the extension is not enabled
+		if (!config.power) {
+			return;
+		}
+
 		if (config.mock_navigator) {
 			try {
 				document.documentElement.appendChild(
