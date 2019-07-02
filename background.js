@@ -1,7 +1,7 @@
 "use strict";
 
 let TAG = "mockify";
-const mode = {
+let mode = {
 	OFF: 'off',
 	NORMAL: 'normal',
 	AGGRESSIVE: 'aggressive'
