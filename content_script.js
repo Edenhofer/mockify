@@ -2,6 +2,12 @@
 
 let TAG = "mockify";
 
+let mode = {
+	OFF: 'off',
+	NORMAL: 'normal',
+	AGGRESSIVE: 'aggressive'
+}
+
 /*
  * Simpler function to log messages
  */
@@ -85,20 +91,20 @@ overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
 overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
 
 function overrideTimeZoneOffset() {
-	if (${config.mock_timezone}) {
-		Date.prototype.getTimezoneOffset = function () {
-			return ${config.alt_timezone};
-		}
-		
-		log("timezone overriding completed with value: " + ${config.alt_timezone});
+	Date.prototype.getTimezoneOffset = function () {
+		return ${config.alt_timezone};
 	}
+	
+	log("timezone overriding completed with value: " + ${config.alt_timezone});
 }
 
-overrideTimeZoneOffset();
+if (${config.mock_timezone}) {
+	overrideTimeZoneOffset();
+}
 `;
 
 		// Do not change any Javascript code if the extension is not enabled
-		if (mode.OFF) {
+		if (config.mode === mode.OFF) {
 			return;
 		}
 
