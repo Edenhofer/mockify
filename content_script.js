@@ -89,6 +89,7 @@ function overrideWindowProperties(properties) {
 
 overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
 overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
+overrideWindowProperties(${JSON.stringify(config.alt_language)});
 
 function overrideTimeZoneOffset() {
 	Date.prototype.getTimezoneOffset = function () {

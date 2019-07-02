@@ -15,6 +15,7 @@ let fallback_config = {
 	block_tracking_urls: true,
 	mock_timezone: true,
 	mock_screen_resolution: true,
+	mock_language: true,
 	block_urls: [
 		// Taken from https://github.com/slingamn/simpleblock/commit/87fe5cdcd4307d006689ad2d824193f0ba55c731
 		"*://*.doubleclick.net/*",
@@ -39,6 +40,10 @@ let fallback_config = {
 	alt_screen_resolution: [
 		{obj: "window.screen", prop: "height", value: 1080},
 		{obj: "window.screen", prop: "width", value: 1920},
+		{obj: "window.screen", prop: "colorDepth", value: 24}
+	],
+	alt_language: [
+		{obj: "window.navigator", prop: "language", value: "en-US"}
 	]
 };
 

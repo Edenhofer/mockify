@@ -13,7 +13,8 @@ let binary_settings = [
 	"mock_navigator",
 	"block_tracking_urls",
 	"mock_timezone",
-	"mock_screen_resolution"
+	"mock_screen_resolution",
+	"mock_language"
 ];
 
 window.onload = function() {
