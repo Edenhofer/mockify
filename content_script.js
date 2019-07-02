@@ -83,6 +83,18 @@ function overrideWindowProperties(properties) {
 
 overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
 overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
+
+function overrideTimeZoneOffset() {
+	if (${config.mock_timezone}) {
+		Date.prototype.getTimezoneOffset = function () {
+			return ${config.alt_timezone};
+		}
+		
+		log("timezone overriding completed with value: " + ${config.alt_timezone});
+	}
+}
+
+overrideTimeZoneOffset();
 `;
 
 		// Do not change any Javascript code if the extension is not enabled

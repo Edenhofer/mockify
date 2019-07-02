@@ -30,7 +30,7 @@ let fallback_config = {
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
 		{ obj: "window.navigator", prop: "vendor", value: "" }
 	],
-	alt_timezone: [],
+	alt_timezone: -120,
 	alt_screen_resolution: [
 		{obj: "window.screen", prop: "height", value: 1080},
 		{obj: "window.screen", prop: "width", value: 1920},
