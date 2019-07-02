@@ -7,8 +7,30 @@ let mode = {
 	AGGRESSIVE: 'aggressive'
 }
 let config = {};
-let fallback_config = {
+let fallback_config_normal = {
 	mode: mode.NORMAL,
+	debug_mode: true,
+	mock_user_agent: true,
+	mock_navigator: true,
+	block_tracking_urls: true,
+	mock_timezone: false,
+	mock_screen_resolution: false,
+	mock_language: false
+};
+
+let fallback_config_off = {
+	mode: mode.OFF,
+	debug_mode: true,
+	mock_user_agent: false,
+	mock_navigator: false,
+	block_tracking_urls: false,
+	mock_timezone: false,
+	mock_screen_resolution: false,
+	mock_language: false
+};
+
+const fallback_config = {
+	mode: mode.AGGRESSIVE,
 	debug_mode: true,
 	mock_user_agent: true,
 	mock_navigator: true,
@@ -239,12 +261,22 @@ function reload() {
 	browser.storage.local.get("config").then(
 		function(response) {
 			// Use the configured setting and else fallback; set `config` globally
-			config = fallback_config;
-			if (typeof response["config"] !== "undefined") {
-				for (let key of Object.keys(response.config)) {
-					config[key] = response.config[key];
-				}
+			config = Object.assign({}, fallback_config);
+
+			switch (response.config["mode"]){
+				case mode.OFF:
+					config = Object.assign(config, fallback_config_off);
+					break;
+				case mode.NORMAL:
+					config = Object.assign(config, fallback_config_normal);
+					break;
+				case mode.AGGRESSIVE:
+					log('PEEENIS');
+					config = Object.assign(config, fallback_config);
+					break;
 			}
+
+			config.mode = response.config["mode"];
 
 			if (config.debug_mode) {
 				log(
@@ -271,7 +303,8 @@ function handleMessage(message, sender) {
 			browser.storage.local.get("config").then(
 				function(response) {
 					// Use the configured setting and else fallback; set `config` globally
-					config = fallback_config;
+					config = Object.assign({}, fallback_config);
+
 					if (typeof response["config"] !== "undefined") {
 						for (let key of Object.keys(response.config)) {
 							config[key] = response.config[key];

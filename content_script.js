@@ -87,16 +87,22 @@ function overrideWindowProperties(properties) {
 	if (${config.debug_mode}) log("window overriding completed...");
 }
 
-overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
-overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
-overrideWindowProperties(${JSON.stringify(config.alt_language)});
-
 function overrideTimeZoneOffset() {
 	Date.prototype.getTimezoneOffset = function () {
 		return ${config.alt_timezone};
 	}
 	
 	log("timezone overriding completed with value: " + ${config.alt_timezone});
+}
+
+overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
+
+if (${config.mock_language}) {
+	overrideWindowProperties(${JSON.stringify(config.alt_language)});
+}
+
+if (${config.mock_screen_resolution}) {
+	overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
 }
 
 if (${config.mock_timezone}) {
