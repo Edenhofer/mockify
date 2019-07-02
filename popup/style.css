@@ -191,3 +191,8 @@ input:checked + .slider:before {
 	-ms-transform: translateX(1.8em);
 	transform: translateX(1.8em);
 }
+
+.mode_selection {
+	width: 50%;
+	margin: auto auto 2em;
+}

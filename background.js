@@ -1,9 +1,14 @@
 "use strict";
 
 let TAG = "mockify";
+const mode = {
+	OFF: 'off',
+	NORMAL: 'normal',
+	AGGRESSIVE: 'aggressive'
+}
 let config = {};
 let fallback_config = {
-	power: true,
+	mode: mode.NORMAL,
 	debug_mode: true,
 	mock_user_agent: true,
 	mock_navigator: true,
@@ -156,7 +161,7 @@ function blockObject(e) {
 
 function addURLListeners() {
 	// Note, enabling callbacks with no URLs will block *all* URLs
-	if (config.block_urls.length == 0) {
+	if (config.block_urls.length === 0) {
 		return;
 	}
 
@@ -201,7 +206,7 @@ function removeURLListeners() {
 }
 
 function updateListeners() {
-	if (!config.power) {
+	if (config.mode === mode.OFF) {
 		removeHeaderListeners();
 		removeURLListeners();
 

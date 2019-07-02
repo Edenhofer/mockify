@@ -98,7 +98,7 @@ overrideTimeZoneOffset();
 `;
 
 		// Do not change any Javascript code if the extension is not enabled
-		if (!config.power) {
+		if (mode.OFF) {
 			return;
 		}
 

@@ -1,8 +1,14 @@
 "use strict";
 
 let TAG = "mockify";
+
+const mode = {
+	OFF: 'off',
+	NORMAL: 'normal',
+	AGGRESSIVE: 'aggressive'
+}
+
 let binary_settings = [
-	"power",
 	"debug_mode",
 	"mock_user_agent",
 	"mock_navigator",
@@ -14,19 +20,40 @@ let binary_settings = [
 window.onload = function() {
 	initConfigurationPage();
 
+	let new_config = {};
+
 	// Add event listeners for every possible value that could be changed
 	for (let setting of binary_settings) {
 		document
 			.getElementById("toggle_" + setting)
 			.addEventListener("click", function() {
-				let new_config = {};
 				new_config[setting] = document.getElementById(
 					"toggle_" + setting
 				).checked;
-
 				updateConfig(new_config);
 			});
 	}
+
+	document.getElementById("mode").addEventListener("change", function() {
+		let selectedMode;
+
+		switch (document.getElementById("mode").value){
+			case "mode_off":
+				selectedMode = mode.OFF;
+				break;
+			case "mode_normal":
+				selectedMode = mode.NORMAL;
+				break;
+			case "mode_aggressive":
+				selectedMode = mode.AGGRESSIVE;
+				break;
+			default: selectedMode = mode.NORMAL;
+		}
+		new_config["mode"] = selectedMode;
+		updateConfig(new_config);
+	});
+
+
 };
 
 /*
@@ -52,6 +79,24 @@ function initConfigurationPage() {
 				if (config[setting]) {
 					document.getElementById("toggle_" + setting).checked = true;
 				}
+			}
+
+			if (config["mode"]) {
+				let recentMode;
+
+				switch (config["mode"]){
+					case mode.OFF:
+						recentMode = "mode_off";
+						break;
+					case mode.NORMAL:
+						recentMode = "mode_normal";
+						break;
+					case mode.AGGRESSIVE:
+						recentMode = "mode_aggressive";
+						break;
+					default: recentMode = "mode_normal";
+				}
+				document.getElementById("mode").value = recentMode;
 			}
 		},
 		function(e) {

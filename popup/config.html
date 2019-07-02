@@ -20,22 +20,16 @@
 
 <body>
 	<br />
+	<div class="mode_selection">
+		<select id="mode">
+			<option value="mode_off">Spoofing Off</option>
+			<option value="mode_normal">normal Mode</option>
+			<option value="mode_aggressive">Aggressive Mode</option>
+		</select>
+	</div>
 
 	<form>
 		<table style="width: 24em;">
-			<tr title="Enable or disable the extension" style="padding-bottom: 2em;font-size: 105%">
-				<td>
-					<b>Power Toggle</b>
-					<span class="tab"></span>
-				</td>
-				<td style="padding-bottom: 2em;">
-					<label class="switch">
-						<input type="checkbox" id="toggle_power" />
-						<span class="slider round"></span>
-					</label>
-				</td>
-			</tr>
-
 			<tr title="Mock information about the operating system, the browser and its version">
 				<td>
 					Mock HTTP USER_AGENT
@@ -131,9 +125,10 @@
 
 	<div class="footer">
 		<p>
-			<i>&copy; Gordian Edenhofer, Shanki Ish Berger</i>
+			<i>&copy; Gordian Edenhofer, Shankara Isha Berger</i>
 		</p>
 	</div>
+
 </body>
 
 </html>
