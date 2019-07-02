@@ -6,7 +6,9 @@ let binary_settings = [
 	"debug_mode",
 	"mock_user_agent",
 	"mock_navigator",
-	"block_tracking_urls"
+	"block_tracking_urls",
+	"mock_timezone",
+	"mock_screen_resolution"
 ];
 
 window.onload = function() {

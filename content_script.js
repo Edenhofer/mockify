@@ -82,6 +82,7 @@ function overrideWindowProperties(properties) {
 }
 
 overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
+overrideWindowProperties(${JSON.stringify(config.alt_screen_resolution)});
 `;
 
 		// Do not change any Javascript code if the extension is not enabled

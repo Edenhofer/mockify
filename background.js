@@ -8,6 +8,8 @@ let fallback_config = {
 	mock_user_agent: true,
 	mock_navigator: true,
 	block_tracking_urls: true,
+	mock_timezone: true,
+	mock_screen_resolution: true,
 	block_urls: [
 		// Taken from https://github.com/slingamn/simpleblock/commit/87fe5cdcd4307d006689ad2d824193f0ba55c731
 		"*://*.doubleclick.net/*",
@@ -27,6 +29,11 @@ let fallback_config = {
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
 		{ obj: "window.navigator", prop: "vendor", value: "" }
+	],
+	alt_timezone: [],
+	alt_screen_resolution: [
+		{obj: "window.screen", prop: "height", value: 1080},
+		{obj: "window.screen", prop: "width", value: 1920},
 	]
 };
 

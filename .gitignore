@@ -1,2 +1,4 @@
 # Ignore GIMP image files
 *.xcf
+*.iml
+*.xml
