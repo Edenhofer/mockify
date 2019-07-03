@@ -11,6 +11,7 @@ let binary_settings = [
 	"debug_mode",
 	"mock_user_agent",
 	"mock_accept_header",
+	"enable_dnt",
 	"mock_navigator",
 	"block_tracking_urls",
 	"mock_timezone",

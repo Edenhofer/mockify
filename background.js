@@ -12,6 +12,7 @@ let fallback_config_normal = {
 	debug_mode: true,
 	mock_user_agent: true,
 	mock_accept_header: true,
+	enable_dnt: true,
 	mock_navigator: true,
 	block_tracking_urls: true,
 	mock_timezone: false,
@@ -24,6 +25,7 @@ let fallback_config_off = {
 	debug_mode: true,
 	mock_user_agent: false,
 	mock_accept_header: false,
+	enable_dnt: false,
 	mock_navigator: false,
 	block_tracking_urls: false,
 	mock_timezone: false,
@@ -36,6 +38,7 @@ let fallback_config_aggressive = {
 	debug_mode: true,
 	mock_user_agent: true,
 	mock_accept_header: true,
+	enable_dnt: true,
 	mock_navigator: true,
 	block_tracking_urls: true,
 	mock_timezone: true,
@@ -70,7 +73,7 @@ let general_config = {
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
 		{ obj: "window.navigator", prop: "vendor", value: "" },
-		{ obj: "window.navigator", prop: "doNotTrack", value: "true"}
+		{ obj: "window.navigator", prop: "doNotTrack", value: true}
 	],
 	alt_timezone: -120,
 	alt_screen_resolution: [
@@ -130,6 +133,13 @@ function rewriteRequestHeader(e) {
 			header.value = config.alt_accept_header[3];
 		}
 	}
+
+	// set DoNotTrack to enabled
+	let dntIndex = e.requestHeaders.findIndex(function h(obj) {
+		return obj.name.toLowerCase() === "dnt";
+	});
+
+	if (dntIndex === -1) e.requestHeaders.push({ name: "DNT", value: "1"});
 
 	return {
 		requestHeaders: e.requestHeaders
