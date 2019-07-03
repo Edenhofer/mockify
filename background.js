@@ -264,9 +264,7 @@ function reload() {
 	browser.storage.local.get("config").then(
 		function(response) {
 			// Use the configured setting and else fallback; set `config` globally
-			config = Object.assign({}, fallback_config_aggressive, general_config);
-
-			log(response.config["mode"]);
+			config = {};
 
 			switch (response.config["mode"]){
 				case mode.OFF:
@@ -278,9 +276,9 @@ function reload() {
 				case mode.AGGRESSIVE:
 					config = Object.assign({}, fallback_config_aggressive, general_config);
 					break;
+				default:
+					config = Object.assign({}, fallback_config_aggressive, general_config);
 			}
-
-			config.mode = response.config["mode"];
 
 			if (config.debug_mode) {
 				log(
@@ -307,7 +305,7 @@ function handleMessage(message, sender) {
 			browser.storage.local.get("config").then(
 				function(response) {
 					// Use the configured setting and else fallback; set `config` globally
-					config = Object.assign({}, fallback_config_aggressive, general_config);
+					config = {};
 
 					switch (response.config["mode"]){
 						case mode.OFF:
@@ -319,6 +317,8 @@ function handleMessage(message, sender) {
 						case mode.AGGRESSIVE:
 							config = Object.assign({}, fallback_config_aggressive, general_config);
 							break;
+						default:
+							config = Object.assign({}, fallback_config_aggressive, general_config);
 					}
 
 					if (config.debug_mode) {

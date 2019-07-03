@@ -39,7 +39,6 @@ window.onload = function() {
 
 		new_config["mode"] = selectedMode;
 		updateConfig(new_config);
-		setToggles(new_config);
 	});
 };
 
@@ -91,15 +90,7 @@ function updateConfig(new_config) {
 	// Merge the current and new config and save it
 	browser.storage.local.get("config").then(
 		function(response) {
-			let synced_config = {};
-			if (typeof response["config"] !== "undefined") {
-				synced_config = response["config"];
-			}
-
-			// Get all new setting values and merge them into the current config
-			for (let setting of Object.keys(new_config)) {
-				synced_config[setting] = new_config[setting];
-			}
+			let synced_config = Object.assign({}, response.config, new_config);
 
 			// Actually save the configuration in `config`
 			// Note that certain types, such as Function, Date, RegExp, Set, Map,
@@ -108,6 +99,12 @@ function updateConfig(new_config) {
 
 			// Send a message to the background process to apply the settings
 			browser.runtime.sendMessage({ action: "reload" });
+
+			// load complete config to set toggles
+			browser.runtime.sendMessage({ action: "getConfig" }).then(
+				function(config) {
+					setToggles(config);
+				});
 		},
 		function onError() {
 			if (browser.runtime.lastError)
@@ -118,25 +115,7 @@ function updateConfig(new_config) {
 
 function setToggles(config){
 	for (let setting of binary_settings) {
-		document.getElementById("toggle_" + setting).checked = false;
 		document.getElementById("toggle_" + setting).disabled = true;
-	}
-
-	switch(config.mode) {
-		case mode.OFF:
-			document.getElementById("toggle_debug_mode").checked = true;
-			break;
-
-		case mode.NORMAL:
-			document.getElementById("toggle_mock_user_agent").checked = true;
-			document.getElementById("toggle_mock_navigator").checked = true;
-			document.getElementById("toggle_block_tracking_urls").checked = true;
-			document.getElementById("toggle_debug_mode").checked = true;
-			break;
-
-		case mode.AGGRESSIVE:
-			for (let setting of binary_settings) {
-				document.getElementById("toggle_" + setting).checked = true;
-			}
+		document.getElementById("toggle_" + setting).checked = config[setting];
 	}
 }
