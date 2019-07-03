@@ -29,7 +29,7 @@ let fallback_config_off = {
 	mock_language: false
 };
 
-const fallback_config = {
+let fallback_config_aggressive = {
 	mode: mode.AGGRESSIVE,
 	debug_mode: true,
 	mock_user_agent: true,
@@ -37,7 +37,10 @@ const fallback_config = {
 	block_tracking_urls: true,
 	mock_timezone: true,
 	mock_screen_resolution: true,
-	mock_language: true,
+	mock_language: true
+};
+
+let general_config = {
 	block_urls: [
 		// Taken from https://github.com/slingamn/simpleblock/commit/87fe5cdcd4307d006689ad2d824193f0ba55c731
 		"*://*.doubleclick.net/*",
@@ -261,18 +264,19 @@ function reload() {
 	browser.storage.local.get("config").then(
 		function(response) {
 			// Use the configured setting and else fallback; set `config` globally
-			config = Object.assign({}, fallback_config);
+			config = Object.assign({}, fallback_config_aggressive, general_config);
+
+			log(response.config["mode"]);
 
 			switch (response.config["mode"]){
 				case mode.OFF:
-					config = Object.assign(config, fallback_config_off);
+					config = Object.assign({}, fallback_config_off, general_config);
 					break;
 				case mode.NORMAL:
-					config = Object.assign(config, fallback_config_normal);
+					config = Object.assign({}, fallback_config_normal, general_config);
 					break;
 				case mode.AGGRESSIVE:
-					log('PEEENIS');
-					config = Object.assign(config, fallback_config);
+					config = Object.assign({}, fallback_config_aggressive, general_config);
 					break;
 			}
 
@@ -303,12 +307,18 @@ function handleMessage(message, sender) {
 			browser.storage.local.get("config").then(
 				function(response) {
 					// Use the configured setting and else fallback; set `config` globally
-					config = Object.assign({}, fallback_config);
+					config = Object.assign({}, fallback_config_aggressive, general_config);
 
-					if (typeof response["config"] !== "undefined") {
-						for (let key of Object.keys(response.config)) {
-							config[key] = response.config[key];
-						}
+					switch (response.config["mode"]){
+						case mode.OFF:
+							config = Object.assign({}, fallback_config_off, general_config);
+							break;
+						case mode.NORMAL:
+							config = Object.assign({}, fallback_config_normal, general_config);
+							break;
+						case mode.AGGRESSIVE:
+							config = Object.assign({}, fallback_config_aggressive, general_config);
+							break;
 					}
 
 					if (config.debug_mode) {

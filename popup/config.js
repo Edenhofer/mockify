@@ -22,18 +22,6 @@ window.onload = function() {
 
 	let new_config = {};
 
-	// Add event listeners for every possible value that could be changed
-	for (let setting of binary_settings) {
-		document
-			.getElementById("toggle_" + setting)
-			.addEventListener("click", function() {
-				new_config[setting] = document.getElementById(
-					"toggle_" + setting
-				).checked;
-				updateConfig(new_config);
-			});
-	}
-
 	document.getElementById("mode").addEventListener("change", function() {
 		let selectedMode;
 
@@ -47,13 +35,12 @@ window.onload = function() {
 			case "mode_aggressive":
 				selectedMode = mode.AGGRESSIVE;
 				break;
-			default: selectedMode = mode.NORMAL;
 		}
+
 		new_config["mode"] = selectedMode;
 		updateConfig(new_config);
+		setToggles(new_config);
 	});
-
-
 };
 
 /*
@@ -75,12 +62,6 @@ function initConfigurationPage() {
 			}
 
 			// Adapt the page to the currently configured values
-			for (let setting of binary_settings) {
-				if (config[setting]) {
-					document.getElementById("toggle_" + setting).checked = true;
-				}
-			}
-
 			if (config["mode"]) {
 				let recentMode;
 
@@ -94,10 +75,11 @@ function initConfigurationPage() {
 					case mode.AGGRESSIVE:
 						recentMode = "mode_aggressive";
 						break;
-					default: recentMode = "mode_normal";
 				}
 				document.getElementById("mode").value = recentMode;
 			}
+
+			setToggles(config);
 		},
 		function(e) {
 			console.error(e);
@@ -132,4 +114,29 @@ function updateConfig(new_config) {
 				console.error("Runtime Error :( " + browser.runtime.lastError);
 		}
 	);
+}
+
+function setToggles(config){
+	for (let setting of binary_settings) {
+		document.getElementById("toggle_" + setting).checked = false;
+		document.getElementById("toggle_" + setting).disabled = true;
+	}
+
+	switch(config.mode) {
+		case mode.OFF:
+			document.getElementById("toggle_debug_mode").checked = true;
+			break;
+
+		case mode.NORMAL:
+			document.getElementById("toggle_mock_user_agent").checked = true;
+			document.getElementById("toggle_mock_navigator").checked = true;
+			document.getElementById("toggle_block_tracking_urls").checked = true;
+			document.getElementById("toggle_debug_mode").checked = true;
+			break;
+
+		case mode.AGGRESSIVE:
+			for (let setting of binary_settings) {
+				document.getElementById("toggle_" + setting).checked = true;
+			}
+	}
 }

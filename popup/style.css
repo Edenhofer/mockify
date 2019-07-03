@@ -196,3 +196,8 @@ input:checked + .slider:before {
 	width: 50%;
 	margin: auto auto 2em;
 }
+
+input[disabled] + .slider {
+	background-color: #dcdcdc;
+}
+
