@@ -11,6 +11,7 @@ let fallback_config_normal = {
 	mode: mode.NORMAL,
 	debug_mode: true,
 	mock_user_agent: true,
+	mock_accept_header: true,
 	mock_navigator: true,
 	block_tracking_urls: true,
 	mock_timezone: false,
@@ -22,6 +23,7 @@ let fallback_config_off = {
 	mode: mode.OFF,
 	debug_mode: true,
 	mock_user_agent: false,
+	mock_accept_header: false,
 	mock_navigator: false,
 	block_tracking_urls: false,
 	mock_timezone: false,
@@ -33,6 +35,7 @@ let fallback_config_aggressive = {
 	mode: mode.AGGRESSIVE,
 	debug_mode: true,
 	mock_user_agent: true,
+	mock_accept_header: true,
 	mock_navigator: true,
 	block_tracking_urls: true,
 	mock_timezone: true,
@@ -108,7 +111,7 @@ function log(message) {
 }
 
 /*
- * Rewrite the request header to mock the USER_AGENT
+ * Rewrite the request header to mock the USER_AGENT and accept-header
  */
 function rewriteRequestHeader(e) {
 	if (config.debug_mode) log("Modifying " + e.url);

@@ -10,6 +10,7 @@ let mode = {
 let binary_settings = [
 	"debug_mode",
 	"mock_user_agent",
+	"mock_accept_header",
 	"mock_navigator",
 	"block_tracking_urls",
 	"mock_timezone",
