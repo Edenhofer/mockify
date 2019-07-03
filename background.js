@@ -56,10 +56,18 @@ let general_config = {
 	],
 	alt_header:
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
+	alt_accept_header: [
+		"text/html, */*; q=0.01",
+		"gzip, deflate, br",
+		"gzip, deflate",
+		"en-US,en;q=0.5"
+	],
+
 	alt_navigator: [
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
-		{ obj: "window.navigator", prop: "vendor", value: "" }
+		{ obj: "window.navigator", prop: "vendor", value: "" },
+		{ obj: "window.navigator", prop: "doNotTrack", value: "true"}
 	],
 	alt_timezone: -120,
 	alt_screen_resolution: [
@@ -105,9 +113,18 @@ function log(message) {
 function rewriteRequestHeader(e) {
 	if (config.debug_mode) log("Modifying " + e.url);
 
+	let https = (e.url.indexOf("https://") === 0);
+
 	for (let header of e.requestHeaders) {
 		if (header.name.toLowerCase() === "user-agent") {
 			header.value = config.alt_header;
+		} else if (header.name.toLowerCase() === "accept") {
+			header.value = config.alt_accept_header[0];
+		} else if (header.name.toLowerCase() === "accept-encoding") {
+			// set accept-encoding header according to page being http or https
+			https ? header.value = config.alt_accept_header[1] : header.value = config.alt_accept_header[1];
+		} else if(header.name.toLowerCase() === "accept-language") {
+			header.value = config.alt_accept_header[3];
 		}
 	}
 
