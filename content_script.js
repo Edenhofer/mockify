@@ -6,7 +6,7 @@ let mode = {
 	OFF: 'off',
 	NORMAL: 'normal',
 	AGGRESSIVE: 'aggressive'
-}
+};
 
 /*
  * Simpler function to log messages
@@ -92,10 +92,12 @@ function overrideTimeZoneOffset() {
 		return ${config.alt_timezone};
 	}
 	
-	log("timezone overriding completed with value: " + ${config.alt_timezone});
+	if (${config.debug_mode}) log("timezone overriding completed with value: " + ${config.alt_timezone});
 }
 
-overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
+if (${config.mock_navigator}) {
+	overrideWindowProperties(${JSON.stringify(config.alt_navigator)});
+}
 
 if (${config.mock_language}) {
 	overrideWindowProperties(${JSON.stringify(config.alt_language)});
@@ -113,9 +115,7 @@ if (${config.mock_timezone}) {
 		// Do not change any Javascript code if the extension is not enabled
 		if (config.mode === mode.OFF) {
 			return;
-		}
-
-		if (config.mock_navigator) {
+		} else {
 			try {
 				document.documentElement.appendChild(
 					Object.assign(document.createElement("script"), {
