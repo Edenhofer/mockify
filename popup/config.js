@@ -117,7 +117,7 @@ function updateConfig(new_config) {
 
 function setToggles(config){
 	for (let setting of binary_settings) {
-		document.getElementById("toggle_" + setting).disabled = true;
 		document.getElementById("toggle_" + setting).checked = config[setting];
+		document.getElementById("toggle_" + setting).disabled = true;
 	}
 }
