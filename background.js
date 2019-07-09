@@ -5,7 +5,7 @@ let mode = {
 	OFF: 'off',
 	NORMAL: 'normal',
 	AGGRESSIVE: 'aggressive'
-}
+};
 let config = {};
 let fallback_config_normal = {
 	mode: mode.NORMAL,
@@ -68,7 +68,6 @@ let general_config = {
 		"gzip, deflate",
 		"en-US,en;q=0.5"
 	],
-
 	alt_navigator: [
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
@@ -296,18 +295,22 @@ function reload() {
 			// Use the configured setting and else fallback; set `config` globally
 			config = {};
 
-			switch (response.config["mode"]){
-				case mode.OFF:
-					config = Object.assign({}, fallback_config_off, general_config);
-					break;
-				case mode.NORMAL:
-					config = Object.assign({}, fallback_config_normal, general_config);
-					break;
-				case mode.AGGRESSIVE:
-					config = Object.assign({}, fallback_config_aggressive, general_config);
-					break;
-				default:
-					config = Object.assign({}, fallback_config_aggressive, general_config);
+			if (response.config) {
+				switch (response.config["mode"]){
+					case mode.OFF:
+						config = Object.assign({}, fallback_config_off, general_config);
+						break;
+					case mode.NORMAL:
+						config = Object.assign({}, fallback_config_normal, general_config);
+						break;
+					case mode.AGGRESSIVE:
+						config = Object.assign({}, fallback_config_aggressive, general_config);
+						break;
+					default:
+						config = Object.assign({}, fallback_config_aggressive, general_config);
+				}
+			} else {
+				config = Object.assign({}, fallback_config_aggressive, general_config);
 			}
 
 			if (config.debug_mode) {
@@ -336,19 +339,23 @@ function handleMessage(message, sender) {
 				function(response) {
 					// Use the configured setting and else fallback; set `config` globally
 					config = {};
-
-					switch (response.config["mode"]){
-						case mode.OFF:
-							config = Object.assign({}, fallback_config_off, general_config);
-							break;
-						case mode.NORMAL:
-							config = Object.assign({}, fallback_config_normal, general_config);
-							break;
-						case mode.AGGRESSIVE:
-							config = Object.assign({}, fallback_config_aggressive, general_config);
-							break;
-						default:
-							config = Object.assign({}, fallback_config_aggressive, general_config);
+					
+					if (response.config) {
+						switch (response.config["mode"]) {
+							case mode.OFF:
+								config = Object.assign({}, fallback_config_off, general_config);
+								break;
+							case mode.NORMAL:
+								config = Object.assign({}, fallback_config_normal, general_config);
+								break;
+							case mode.AGGRESSIVE:
+								config = Object.assign({}, fallback_config_aggressive, general_config);
+								break;
+							default:
+								config = Object.assign({}, fallback_config_aggressive, general_config);
+						}
+					} else {
+						config = Object.assign({}, fallback_config_aggressive, general_config);
 					}
 
 					if (config.debug_mode) {
