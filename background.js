@@ -62,12 +62,12 @@ let general_config = {
 	],
 	alt_header:
 		"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
-	alt_accept_header: [
-		"text/html, */*; q=0.01",
-		"gzip, deflate, br",
-		"gzip, deflate",
-		"en-US,en;q=0.5"
-	],
+	alt_accept_header: {
+		accept: "text/html, */*; q=0.01",
+		accept_encoding_https: "gzip, deflate, br",
+		accept_encoding_http: "gzip, deflate",
+		accept_language: "en-US,en;q=0.5"
+	},
 	alt_navigator: [
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
@@ -76,13 +76,14 @@ let general_config = {
 	],
 	alt_timezone: -120,
 	alt_screen_resolution: [
-		{obj: "window.screen", prop: "height", value: 1080},
-		{obj: "window.screen", prop: "width", value: 1920},
-		{obj: "window.screen", prop: "colorDepth", value: 24}
+		{ obj: "window.screen", prop: "height", value: 1080 },
+		{ obj: "window.screen", prop: "width", value: 1920 },
+		{ obj: "window.screen", prop: "colorDepth", value: 24 }
 	],
 	alt_language: [
-		{obj: "window.navigator", prop: "language", value: "en-US"}
-	]
+		{ obj: "window.navigator", prop: "language", value: "en-US" }
+	],
+	dnt: { name: "DNT", value: "1" }
 };
 
 let type_callback_map = [
@@ -121,24 +122,26 @@ function rewriteRequestHeader(e) {
 	let https = (e.url.indexOf("https://") === 0);
 
 	for (let header of e.requestHeaders) {
-		if (header.name.toLowerCase() === "user-agent") {
+		if (header.name.toLowerCase() === "user-agent" && config.mock_user_agent) {
 			header.value = config.alt_header;
-		} else if (header.name.toLowerCase() === "accept") {
-			header.value = config.alt_accept_header[0];
-		} else if (header.name.toLowerCase() === "accept-encoding") {
+		} else if (header.name.toLowerCase() === "accept" && config.mock_accept_header) {
+			header.value = config.alt_accept_header.accept;
+		} else if (header.name.toLowerCase() === "accept-encoding" && config.mock_accept_header) {
 			// set accept-encoding header according to page being http or https
-			https ? header.value = config.alt_accept_header[1] : header.value = config.alt_accept_header[1];
-		} else if(header.name.toLowerCase() === "accept-language") {
-			header.value = config.alt_accept_header[3];
+			https ? header.value = config.alt_accept_header.accept_encoding_https : header.value = config.alt_accept_header.accept_encoding_http;
+		} else if (header.name.toLowerCase() === "accept-language" && config.mock_accept_header) {
+			header.value = config.alt_accept_header.accept_language;
 		}
 	}
 
-	// set DoNotTrack to enabled
-	let dntIndex = e.requestHeaders.findIndex(function h(obj) {
-		return obj.name.toLowerCase() === "dnt";
-	});
+	if (config.enable_dnt) {
+		// set DoNotTrack to enabled
+		let dntIndex = e.requestHeaders.findIndex(function h(obj) {
+			return obj.name.toLowerCase() === "dnt";
+		});
 
-	if (dntIndex === -1) e.requestHeaders.push({ name: "DNT", value: "1"});
+		if (dntIndex === -1) e.requestHeaders.push(config.dnt);
+	}
 
 	return {
 		requestHeaders: e.requestHeaders
@@ -272,7 +275,7 @@ function updateListeners() {
 		return;
 	}
 
-	if (config.mock_user_agent) {
+	if (config.mock_user_agent || config.mock_accept_header || config.enable_dnt) {
 		addHeaderListeners();
 	} else {
 		removeHeaderListeners();
@@ -339,7 +342,7 @@ function handleMessage(message, sender) {
 				function(response) {
 					// Use the configured setting and else fallback; set `config` globally
 					config = {};
-					
+
 					if (response.config) {
 						switch (response.config["mode"]) {
 							case mode.OFF:
