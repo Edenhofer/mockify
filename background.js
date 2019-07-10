@@ -75,9 +75,8 @@ let general_config = {
 		{ obj: "window.navigator", prop: "oscpu", value: "Windows NT 10.0" },
 		{ obj: "window.navigator", prop: "platform", value: "Win32" },
 		{ obj: "window.navigator", prop: "vendor", value: "" },
-		{ obj: "window.navigator", prop: "doNotTrack", value: true}
 	],
-	alt_timezone: -120,
+	alt_timezone: 240,
 	alt_screen_resolution: [
 		{ obj: "window.screen", prop: "height", value: 1080 },
 		{ obj: "window.screen", prop: "width", value: 1920 },
@@ -85,9 +84,6 @@ let general_config = {
 	],
 	alt_language: [
 		{ obj: "window.navigator", prop: "language", value: "en-US" }
-	],
-	alt_touch_support: [
-		{ obj: "window.ontouchstart", value: true }
 	],
 	dnt: { name: "DNT", value: "1" }
 };
