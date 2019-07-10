@@ -17,7 +17,8 @@ let fallback_config_normal = {
 	block_tracking_urls: true,
 	mock_timezone: false,
 	mock_screen_resolution: false,
-	mock_language: false
+	mock_language: false,
+	mock_touch_support: false
 };
 
 let fallback_config_off = {
@@ -30,7 +31,8 @@ let fallback_config_off = {
 	block_tracking_urls: false,
 	mock_timezone: false,
 	mock_screen_resolution: false,
-	mock_language: false
+	mock_language: false,
+	mock_touch_support: false
 };
 
 let fallback_config_aggressive = {
@@ -43,7 +45,8 @@ let fallback_config_aggressive = {
 	block_tracking_urls: true,
 	mock_timezone: true,
 	mock_screen_resolution: true,
-	mock_language: true
+	mock_language: true,
+	mock_touch_support: true
 };
 
 let general_config = {
@@ -82,6 +85,9 @@ let general_config = {
 	],
 	alt_language: [
 		{ obj: "window.navigator", prop: "language", value: "en-US" }
+	],
+	alt_touch_support: [
+		{ obj: "window.ontouchstart", value: true }
 	],
 	dnt: { name: "DNT", value: "1" }
 };

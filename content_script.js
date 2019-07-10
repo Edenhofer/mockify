@@ -76,6 +76,14 @@ function overrideWindowProperties(properties) {
 				) {
 					override(node.contentWindow, properties);
 				}
+				
+				if (
+					typeof node.contentWindow !== "undefined" &&
+					node.contentWindow !== null &&
+					typeof node.contentWindow.ontouchstart !== "undefined"
+				) {
+					delete window.ontouchstart;
+				}
 			}
 		}
 	});
@@ -110,6 +118,8 @@ if (${config.mock_screen_resolution}) {
 if (${config.mock_timezone}) {
 	overrideTimeZoneOffset();
 }
+
+
 `;
 
 		// Do not change any Javascript code if the extension is not enabled

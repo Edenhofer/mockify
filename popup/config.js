@@ -16,7 +16,8 @@ let binary_settings = [
 	"block_tracking_urls",
 	"mock_timezone",
 	"mock_screen_resolution",
-	"mock_language"
+	"mock_language",
+	"mock_touch_support"
 ];
 
 window.onload = function() {
